@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StorePostRequest;
 use Illuminate\Http\Request;
 
 use App\Models\User;
-
+use Validator;
 use Symfony\Component\HttpFoundation\Response;
 use Exception;
 use Illuminate\Support\Facades\Hash;
@@ -27,10 +28,9 @@ class UserController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
-    {  /* dd($request); */
-        // Tạo rule cho kết quả nhập vào đây là demo nên làm
-        $rules = [
+    public function store(StorePostRequest $request)
+    { 
+        /* $rules = [
             'phone' => 'nullable|regex:/^([0-9\s\-\+\(\)]*)$/|min:10',
             'email' => 'nullable|email',
             'username' => 'nullable|string|max:255',
@@ -43,26 +43,21 @@ class UserController extends Controller
             'email.email' => 'Email không hợp lệ.',
             'username.string' => 'Tên người dùng phải là một chuỗi ký tự.',
             'username.max' => 'Tên người dùng không được vượt quá 255 ký tự.',
-        ];
-        /*  $validated = $request->validate([
-            'email' => 'required|email',
-            'password' => 'required',
-        ]); */
-        $validated = $this->validate($request, $rules, $messages);
-        /* dd($validated); */
-
+        ]; */
+        $validated = $request->validated();
+        dd($validated);
         try {
             if ($validated) {
+            
                 $request['password'] = Hash::make($request['password']);
                 $request['role_id'] = $request['role_id'] ?? 0;
-                $user = User::create($request->all());
-                //Đến dây sẽ cần phải gửi email xác thực! Hiện tại đang test nên chưa cần
+                $data = User::create($request->all());
                 return response()->json(['message' => 'Tạo tài khoản thành công'], Response::HTTP_OK);
             } else {
                 return response()->json(['message' => 'Vui lòng điền đày đủ thông tin'], Response::HTTP_BAD_REQUEST);
             }
         } catch (Exception $e) {
-            return response()->json(['error' => 'Lỗi chưa xác định, vui lòng thử lại sau vài phút'], Response::HTTP_BAD_GATEWAY);
+            return response()->json(['error' => $e->getMessage()], Response::HTTP_BAD_GATEWAY);
         }
     }
 
@@ -74,7 +69,7 @@ class UserController extends Controller
         try {
             $data = User::select('username', 'phone_number', 'email', 'email_verified_at', 'avatar')->find($user->id);
             return response()->json($data, Response::HTTP_OK);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return response()->json(['error' => $e->getMessage()], Response::HTTP_BAD_REQUEST);
         }
     }
@@ -84,21 +79,17 @@ class UserController extends Controller
      */
     public function update(Request $request, User $user)
     {
-        $validated = $request->validate([
-            "name" => "required",
-            'avatar.*' => 'required|image|mimes:jpg,png,jpeg,gif,svg|max:2048',
-        ]);
+        $validated = $request->validated();
         try {
             if ($validated) {
-                $fields = $request->only("name", "avatar");
-                $fields = array_filter($fields, fn ($value) => !isNull($value));
-                //Chưa lưu hình ảnh cần phải kiểm tra kỹ hơn 
-                $data = User::where("id", $user->id)->update($fields);
+                $fields = $request->only('name', 'avatar');
+                $fields = array_filter($fields, fn ($value) => !is_null($value));
+                $data = User::where('id', $user->id)->update($fields);
                 return response()->json(['message' => 'Cập nhật thành công'], Response::HTTP_OK);
             } else {
                 return response()->json(['error'=> 'Vui lòng nhập đúng định dạng'], Response::HTTP_BAD_REQUEST);
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return response()->json(['error'=> 'Lỗi không xác định'], Response::HTTP_BAD_REQUEST);
         }
     }
@@ -109,14 +100,14 @@ class UserController extends Controller
     public function destroy(User $user)
     {
         try {
-            $isdelte = User::where('id', $user->id)->delete();
-            if ($isdelte) {
-                //Sau này sẽ thành xoá tài khoản sau 30 ngày
+            $result = User::find( $user->id);
+            if ($result) {
+                $result->delete();
             return response()->json(['message'=> 'Xoá tài khoản thành công'], Response::HTTP_OK);
             }else {
                 return response()->json(['error'=> 'Xoá tài khoản không thành công'], Response::HTTP_BAD_REQUEST);
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return response()->json(['error'=> 'Lỗi không xác định'], Response::HTTP_BAD_REQUEST);
             
         }

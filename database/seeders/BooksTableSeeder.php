@@ -47,11 +47,7 @@ class BooksTableSeeder extends Seeder
                 $image->is_default = ($j == 1) ? true : false;
                 $image->save();
 
-                // Set the default image id for the book
-                if ($j == 1) {
-                    $book->default_image_id = $image->id;
-                    $book->save();
-                }
+              
             }
         }
     }

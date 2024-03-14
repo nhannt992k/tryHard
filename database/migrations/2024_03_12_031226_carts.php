@@ -15,6 +15,9 @@ return new class extends Migration
             $table->increments('id');
             $table->integer('user_id')->unsigned();
             $table->foreign('user_id')->references('id')->on('users');
+            $table->integer('book_id')->unsigned();
+            $table->integer('amount');
+            $table->foreign('book_id')->references('id')->on('books');
             $table->timestamps();
 
         });

@@ -35,14 +35,14 @@ class UsersTableSeeder extends Seeder
         $admin->email = 'admin@example.com';
         $admin->phone_number = '1234567890';
         $admin->password = Hash::make('password');
-        $admin->role()->associate($adminRole);
+        $admin->role_id = 1;
         $admin->save();
 
        
        
 
         // Create 9 regular users
-        for ($i = 1; $i <= 9; $i++) {
+       /*  for ($i = 1; $i <= 9; $i++) {
             $user = new User();
             $user->name = 'User ' . $i;
             $user->email = 'user' . $i . '@example.com';
@@ -50,7 +50,7 @@ class UsersTableSeeder extends Seeder
             $user->password = Hash::make('password');
             $user->role()->associate($userRole);
             $user->save();
-        }
+        } */
     
     }
 }
