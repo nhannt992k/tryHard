@@ -41,11 +41,11 @@ class AddressController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(AddressRequest $request)
+    public function store(AddressRequest $request,User $user)
     {
         try {
                 $request->validated();
-                $data = Address::create($request->only('province','district','ward','commue','address','is_default'));
+                $data = Address::create($request->only('province','district','ward','commue','address','is_default','user_id'));
                 return response()->json(['message' => 'Địa chỉ của bạn đã được thêm thành công'], Response::HTTP_CREATED);
         } catch (Exception $e) {
             return response()->json(['error' => $e->getMessage()], Response::HTTP_BAD_REQUEST);

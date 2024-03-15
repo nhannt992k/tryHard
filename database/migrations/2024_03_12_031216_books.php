@@ -17,7 +17,7 @@ return new class extends Migration
             $table->integer('author_id')->unsigned();
             $table->integer('publisher_id')->unsigned();
             $table->integer('category_id')->unsigned();
-            $table->string('description');
+            $table->string('description')->nullable();
             $table->integer('quantity');
             $table->integer('price');
             $table->foreign('author_id')->references('id')->on('authors');

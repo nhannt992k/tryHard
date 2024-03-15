@@ -37,5 +37,6 @@ Route::get('/carts/{user}',[CartController::class,'index']);
 Route::post('/cart',[CartController::class,'store']);
 
 Route::delete('/cart/{cart}',[CartController::class,'destroy']);
+Route::post('/address',[AddressController::class,'store']);
 
 Route::post('/invoice',[InvoiceController::class,'store']);

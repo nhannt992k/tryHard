@@ -27,10 +27,16 @@ class UserController extends Controller
     {
         try {
             $request->validated();
-            $request['password'] = Hash::make($request['password']);
-            $request['role_id'] = $request['role_id'] ?? 0;
-            $user = User::create($request->all());
-            return response()->json(['message' => 'Account created successfully'], Response::HTTP_OK);
+            dd($request->all());
+            if ($request) {
+                $request['password'] = Hash::make($request['password']);
+                $request['role_id'] = $request['role_id'] ?? 0;
+                $user = User::create($request->all());
+                return response()->json(['message' => 'Account created successfully'], Response::HTTP_OK);
+            }else{
+                return response()->json(['message'=> ''], Response::HTTP_BAD_REQUEST);
+            }
+           
         } catch (Exception $e) {
             return response()->json(['error' => $e->getMessage()], Response::HTTP_BAD_GATEWAY);
         }
@@ -52,17 +58,23 @@ class UserController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UserRequest $request, User $user)
+    public function update(Request $request, User $user)
     {
         try {
-            $request->validated();
+            // $request->validated();
+            // dd($request->all());
             $fields = $request->only('name', 'avatar');
+            $fileName  = $request->file('avatar')->getClientOriginalName();
+            $pathImage = $request->file('avatar')->storeAs('uploads', $fileName,'public');
+            $fields['avatar'] = $pathImage;
+            // dd($fields);
             $fields = array_filter($fields, fn ($value) => !is_null($value));
             $data = User::where('id', $user->id)->update($fields);
             return response()->json(['message' => 'Update successful'], Response::HTTP_ACCEPTED);
         } catch (Exception $e) {
             return response()->json(['error' => $e->getMessage()], Response::HTTP_BAD_REQUEST);
         }
+        
     }
 
     /**
