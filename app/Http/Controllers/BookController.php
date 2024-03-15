@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\BookRequest;
 use App\Models\Book;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
+use Symfony\Component\HttpFoundation\Response;
 use App\Models\Image;
-
+use Exception;
 class BookController extends Controller
 {
     /**
@@ -20,7 +21,7 @@ class BookController extends Controller
                 ->select('books.id', 'books.price', 'books.quantity', 'images.image')
                 ->where('images.is_default', 1)->get();
             return response()->json($data);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return response()->json(['error' => $e->getMessage()], Response::HTTP_BAD_REQUEST);
         }
     }
@@ -36,9 +37,15 @@ class BookController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(BookRequest $request)
     {
-        //
+        try {
+            $request->validated();
+            $book = Book::create($request->all());
+            return response()->json(['success'=> 'Create book successfully'],Response::HTTP_CREATED);
+        } catch (Exception $e) {
+            return response()->json(['error'=> $e->getMessage()], Response::HTTP_BAD_REQUEST);
+        }
     }
 
     /**
@@ -60,9 +67,9 @@ class BookController extends Controller
                 $data['images'] = $images;
                 return response()->json($data);
             } else {
-                return response()->json(['error' => 'Book not found'], 404);
+                return response()->json(['error' => 'Book not found'],Response::HTTP_NOT_FOUND);
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return response()->json(['error' => $e->getMessage()], Response::HTTP_BAD_REQUEST);
         }
     }
@@ -78,7 +85,7 @@ class BookController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(BookController $request, Book $book)
     {
         //
     }
@@ -86,7 +93,7 @@ class BookController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Book $book)
     {
         //
     }

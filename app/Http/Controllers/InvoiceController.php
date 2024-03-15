@@ -2,7 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StorePostRequest;
+use App\Models\Cart;
+use App\Models\Invoice;
+use App\Models\InvoiceItem;
 use Illuminate\Http\Request;
+use Exception;
+use Symfony\Component\HttpFoundation\Response;
+
 
 class InvoiceController extends Controller
 {
@@ -27,7 +34,29 @@ class InvoiceController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        /* dd($request->all()); */
+        try {
+            if (!empty($request)) {
+                $cartItems = Cart::select("user_id", "book_id", "amount")
+                    ->whereIn("id", $request->id)
+                    ->get()
+                    ->toArray();
+                $userId = $cartItems[0]['user_id'];
+                /* dd($userId); */
+                $invoice = Invoice::create(['total_amount' => $userId]);
+                $invoiceItems = [];
+                foreach ($cartItems as $item) {
+                    $invoiceItems[] = new InvoiceItem($item);
+                }
+                $invoice->items()->saveMany($invoiceItems);
+                Cart::whereIn('id', $request->id)->delete();
+                return response()->json(['message' => 'Đã xuất hoá đơn thành công'], Response::HTTP_CREATED);
+            } else {
+                return response()->json(["message" => "Không thể tạo hoá đơn"], Response::HTTP_BAD_REQUEST);
+            }
+        } catch (Exception $e) {
+            return response()->json(["message" => $e->getMessage()], Response::HTTP_BAD_REQUEST);
+        }
     }
 
     /**

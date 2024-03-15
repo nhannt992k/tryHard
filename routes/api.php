@@ -3,6 +3,7 @@
 use App\Http\Controllers\AddressController;
 use App\Http\Controllers\BookController;
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\UserRoleController;
 use Illuminate\Http\Request;
@@ -36,3 +37,5 @@ Route::get('/carts/{user}',[CartController::class,'index']);
 Route::post('/cart',[CartController::class,'store']);
 
 Route::delete('/cart/{cart}',[CartController::class,'destroy']);
+
+Route::post('/invoice',[InvoiceController::class,'store']);

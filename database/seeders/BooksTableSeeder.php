@@ -8,6 +8,8 @@ use App\Models\Image;
 use App\Models\Author;
 use App\Models\Publisher;
 use App\Models\Book;
+use App\Models\Category;
+
 class BooksTableSeeder extends Seeder
 {
     /**
@@ -29,12 +31,19 @@ class BooksTableSeeder extends Seeder
             $publisher->save();
         }
 
+        //Crate 5 categories
+        for ($i = 1; $i <= 5; $i++) {
+            $category = new Category();
+            $category->name = 'Category ' . $i;
+            $category->save();
+        }
         // Create 20 books
         for ($i = 1; $i <= 20; $i++) {
             $book = new Book();
             $book->name = 'Book ' . $i;
             $book->author_id = rand(1, 5);
             $book->publisher_id = rand(1, 3);
+            $book->category_id = rand(1, 5);
             $book->quantity = rand(50, 100);
             $book->price = rand(100000, 900000);
             $book->save();

@@ -8,7 +8,8 @@ use App\Models\User;
 use App\Models\Book;
 use Exception;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
+use Symfony\Component\HttpFoundation\Response;
+
 use Validator;
 
 class CartController extends Controller
@@ -51,13 +52,18 @@ class CartController extends Controller
     {
         $validated  = $request->validated();
         try {
-            $result = Cart::findOrFail('id', $cart->id);
-            if ($result) {
-                $result->update($request->only('amount'));
-                return response()->json(['success' => 'Đã lưu các cập nhật của bạn'], Response::HTTP_ACCEPTED);
-            } else {
-                return response()->json(['message' => 'Không thể cập nhật số lượng sản phẩm của bạn'], Response::HTTP_NOT_ACCEPTABLE);
+            if ($validated) {
+                $result = Cart::findOrFail('id', $cart->id);
+                if ($result) {
+                    $result->update($request->only('amount'));
+                    return response()->json(['success' => 'Đã lưu các cập nhật của bạn'], Response::HTTP_ACCEPTED);
+                } else {
+                    return response()->json(['message' => 'Không thể cập nhật số lượng sản phẩm của bạn'], Response::HTTP_NOT_ACCEPTABLE);
+                }
+            }else {
+                return response()->json(['message'=> 'Có lỗi trong quá trình cập nhật'], Response::HTTP_BAD_REQUEST);
             }
+            
         } catch (Exception $e) {
             return response()->json(['error' => $e->getMessage()], Response::HTTP_BAD_REQUEST);
         }

@@ -14,6 +14,10 @@ return new class extends Migration
         Schema::create('addresses', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('user_id')->unsigned();
+            $table->string('province');
+            $table->string('district');
+            $table->string('ward');
+            $table->string('commue');
             $table->string('address');
             $table->boolean('is_default');
             $table->foreign('user_id')->references('id')->on('users');

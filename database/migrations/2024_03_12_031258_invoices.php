@@ -13,9 +13,7 @@ return new class extends Migration
     {
         Schema::create('invoices', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('cart_id')->unsigned();
-            $table->integer('total_amount');
-            $table->foreign('cart_id')->references('id')->on('carts');
+            $table->integer('user_id')->unsigned();
             $table->timestamps();
 
         });

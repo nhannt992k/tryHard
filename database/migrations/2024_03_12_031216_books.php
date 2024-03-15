@@ -16,10 +16,13 @@ return new class extends Migration
             $table->string('name');
             $table->integer('author_id')->unsigned();
             $table->integer('publisher_id')->unsigned();
+            $table->integer('category_id')->unsigned();
+            $table->string('description');
             $table->integer('quantity');
             $table->integer('price');
             $table->foreign('author_id')->references('id')->on('authors');
             $table->foreign('publisher_id')->references('id')->on('publishers');
+            $table->foreign('category_id')->references('id')->on('categories');
             $table->timestamps();
 
         });

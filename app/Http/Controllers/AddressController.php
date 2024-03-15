@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\AddressRequest;
+use App\Http\Requests\StorePostRequest;
 use Illuminate\Http\Request;
 use App\Models\Address;
 use App\Models\User;
-use Illuminate\Http\Response;
+use Symfony\Component\HttpFoundation\Response;
+use Exception;
 
 use function PHPUnit\Framework\isNull;
 
@@ -22,7 +25,7 @@ class AddressController extends Controller
                 ->where('user_id', auth()->user()->id)
                 ->get();
             return response()->json($data);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return response()->json(['error' => $e->getMessage()], Response::HTTP_BAD_REQUEST);
         }
     }
@@ -38,20 +41,13 @@ class AddressController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(AddressRequest $request)
     {
-        $validated = $request->validate([
-            'address' => 'required',
-            'user_id' => 'required',
-            'is_default' => 'required',
-        ]);
-
         try {
-            if ($validated) {
-                $data = Address::create($request->only('address', 'user_id', 'is_default'));
+                $request->validated();
+                $data = Address::create($request->only('province','district','ward','commue','address','is_default'));
                 return response()->json(['message' => 'Địa chỉ của bạn đã được thêm thành công'], Response::HTTP_CREATED);
-            }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return response()->json(['error' => $e->getMessage()], Response::HTTP_BAD_REQUEST);
         }
     }
@@ -64,7 +60,7 @@ class AddressController extends Controller
         try {
             $data = Address::find($address->id);
             return response()->json($data);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return response()->json(['error' => $e->getMessage()], Response::HTTP_BAD_REQUEST);
         }
     }
@@ -80,21 +76,15 @@ class AddressController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Address $address)
+    public function update(AddressRequest $request, Address $address)
     {
-        $validated = $request->validate([
-            'address' => 'required',
-            'is_default' => 'required',
-        ]);
         try {
-            if ($validated) {
-                $fields = $request->only("address", "is_default");
-                $fields = array_filter($fields, fn ($value) =>!isNull($value));
-                $data = Address::where('id', $address->id)->update($fields);
-                return response()->json(['message' => 'Chỉnh sửa địa chỉ thành công'], Response::HTTP_ACCEPTED);
-            
-            }
-        } catch (\Exception $e) {
+            $request->validated();
+            $fields = $request->only('province', 'district', 'ward', 'commue', 'address', 'is_default');
+            $fields = array_filter($fields, fn ($value) => !isNull($value));
+            $data = Address::where('id', $address->id)->update($fields);
+            return response()->json(['message' => 'Chỉnh sửa địa chỉ thành công'], Response::HTTP_ACCEPTED);
+        } catch (Exception $e) {
             return response()->json(['error' => $e->getMessage()], Response::HTTP_BAD_REQUEST);
         }
     }
@@ -106,11 +96,11 @@ class AddressController extends Controller
     {
         try {
             $data = Address::where('id', $address->id)
-            ->where('user_id', $user->id)
-            ->delete();
-            return response()->json(['message'=> 'Xoá địa chỉ thành công'], Response::HTTP_OK);
-        } catch (\Exception $e) {
-            return response()->json(['error'=> $e->getMessage()], Response::HTTP_BAD_REQUEST);
+                ->where('user_id', $user->id)
+                ->delete();
+            return response()->json(['message' => 'Xoá địa chỉ thành công'], Response::HTTP_OK);
+        } catch (Exception $e) {
+            return response()->json(['error' => $e->getMessage()], Response::HTTP_BAD_REQUEST);
         }
     }
 }
