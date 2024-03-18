@@ -7,7 +7,6 @@ use Exception;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-
 class CategoryController extends Controller
 {
     /**
@@ -16,7 +15,7 @@ class CategoryController extends Controller
     public function index()
     {
         try {
-            $categories = Category::select('id','name')->get();
+            $categories = Category::select('id', 'name')->get();
             return response()->json($categories);
         } catch (Exception $e) {
             return response()->json(['error' => $e->getMessage()], Response::HTTP_BAD_REQUEST);
@@ -54,7 +53,21 @@ class CategoryController extends Controller
      */
     public function update(Request $request, Category $category)
     {
-        //
+        $validated = $request->validate([
+            'name' => 'required',
+        ]);
+        try {
+            if ($validated) {
+                $data = Category::where('id', $category->id)
+                ->update($request->only('name'));
+                return response()->json(['message' => 'Update success'],Response::HTTP_OK);
+            }else {
+                return response()->json(['error' => 'Update fail'],Response::HTTP_OK);
+
+            }
+        } catch (Exception $e) {    
+            return response()->json(['error'=> $e->getMessage()], Response::HTTP_BAD_REQUEST);
+        }
     }
 
     /**
