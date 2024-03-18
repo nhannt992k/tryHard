@@ -2,11 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\UserRequest;
 use Illuminate\Http\Request;
-
 use App\Models\User;
-use Validator;
 use Symfony\Component\HttpFoundation\Response;
 use Exception;
 use Illuminate\Support\Facades\Hash;
@@ -23,20 +20,22 @@ class UserController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(UserRequest $request)
+    public function store(Request $request)
     {
+        $validated = $request->validate([
+            'email' => 'sometimes|nullable|email',
+            'username' => 'sometimes|nullable|string',
+            'phonenumber' => 'sometimes|nullable|regex:/^([0-9\s\-\+\(\)]*)$/|min:10',
+        ]);
         try {
-            $request->validated();
-            dd($request->all());
-            if ($request) {
+            if ($validated) {
                 $request['password'] = Hash::make($request['password']);
                 $request['role_id'] = $request['role_id'] ?? 0;
                 $user = User::create($request->all());
                 return response()->json(['message' => 'Account created successfully'], Response::HTTP_OK);
-            }else{
-                return response()->json(['message'=> ''], Response::HTTP_BAD_REQUEST);
+            } else {
+                return response()->json(['error' => 'Cant create this use'], Response::HTTP_BAD_REQUEST);
             }
-           
         } catch (Exception $e) {
             return response()->json(['error' => $e->getMessage()], Response::HTTP_BAD_GATEWAY);
         }
@@ -60,21 +59,25 @@ class UserController extends Controller
      */
     public function update(Request $request, User $user)
     {
+        $validated = $request->validate([
+            'username' => 'required|nullable|string|max:255',
+            'avatar' => 'sometimes|nullable|image|mimes:jpg,png,jpeg,gif,svg|max:2048',
+        ]);
         try {
-            // $request->validated();
-            // dd($request->all());
+           if ($validated) {
             $fields = $request->only('name', 'avatar');
             $fileName  = $request->file('avatar')->getClientOriginalName();
-            $pathImage = $request->file('avatar')->storeAs('uploads', $fileName,'public');
+            $pathImage = $request->file('avatar')->storeAs('uploads', $fileName, 'public');
             $fields['avatar'] = $pathImage;
-            // dd($fields);
             $fields = array_filter($fields, fn ($value) => !is_null($value));
             $data = User::where('id', $user->id)->update($fields);
             return response()->json(['message' => 'Update successful'], Response::HTTP_ACCEPTED);
+           }else {
+            return response()->json(['error' => 'Cannot update'], Response::HTTP_BAD_REQUEST);
+           }
         } catch (Exception $e) {
             return response()->json(['error' => $e->getMessage()], Response::HTTP_BAD_REQUEST);
         }
-        
     }
 
     /**

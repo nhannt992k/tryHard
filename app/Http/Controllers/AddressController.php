@@ -17,12 +17,12 @@ class AddressController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(User $user)
     {
         try {
             $data = Address::query()
-                ->select('address')
-                ->where('user_id', auth()->user()->id)
+                ->select('id', 'province', 'district', 'ward', 'commue', 'address', 'is_default')
+                ->where('user_id', $user->id)
                 ->get();
             return response()->json($data);
         } catch (Exception $e) {
@@ -41,12 +41,12 @@ class AddressController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(AddressRequest $request,User $user)
+    public function store(AddressRequest $request, User $user)
     {
         try {
-                $request->validated();
-                $data = Address::create($request->only('province','district','ward','commue','address','is_default','user_id'));
-                return response()->json(['message' => 'Địa chỉ của bạn đã được thêm thành công'], Response::HTTP_CREATED);
+            $request->validated();
+            $data = Address::create($request->only('province', 'district', 'ward', 'commue', 'address', 'is_default', 'user_id'));
+            return response()->json(['message' => 'Địa chỉ của bạn đã được thêm thành công'], Response::HTTP_CREATED);
         } catch (Exception $e) {
             return response()->json(['error' => $e->getMessage()], Response::HTTP_BAD_REQUEST);
         }

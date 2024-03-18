@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use Illuminate\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Log;
 
@@ -21,22 +22,41 @@ class UserRequest extends FormRequest
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
      */
     public function rules(): array
-    {dd($this->all());
+    {/* dd($this->all()); */
         return [
-            'name' => 'sometimes|nullable|string',
-            'phonenumber' => 'sometimes|nullable|regex:/^([0-9\s\-\+\(\)]*)$/|min:10',
-            'username' => 'sometimes|nullable|string|max:255',
-            'email' => 'sometimes|nullable|email',
+            'name' => 'sometirequiredmes|nullable|string',
+            'phonenumber' => 'required|nullable|regex:/^([0-9\s\-\+\(\)]*)$/|min:10',
+            'username' => 'required|nullable|string|max:255',
+            'email' => 'required|nullable|email',
             'avatar' => 'sometimes|nullable|image|mimes:jpg,png,jpeg,gif,svg|max:2048',
             'password' => 'required|string',
         ];
     }
-    public function withValidator($validator)
+
+    public function after(): array
     {
-        $validator->after(function ($validator) {
-            if (empty($this->username) && empty($this->phonenumber) && empty($this->email)) {
-                $validator->errors()->add('fields', 'At least one of username, phonenumber or email is required');
+        return [
+            function (Validator $validator) {
+                if (empty($this->username) || empty($this->phonenumber) || empty($this->email)) {
+                    $validator->errors()->add(
+                        'field',
+                        'Something is wrong with this field!'
+                    );
+                }
             }
-        });
+
+        ];
+    }
+    /**
+     * Get the error messages for the defined validation rules.
+     *
+     * @return array<string, string>
+     */
+    public function attributes(): array
+    {dd($this->getAttributes());
+        return [
+            'phonenumber.required' => 'A phonenumber is required',
+            'email.required' => 'A email is required',
+        ];
     }
 }

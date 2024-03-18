@@ -17,12 +17,18 @@ class CartController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StorePostRequest $request)
+    public function store(Request $request)
     {
-        $validated = $request->validated();
-
-        Cart::create($request->all());
-        return response()->json(['success' => 'Thêm sản phẩm vào giỏ hàng thành công'], Response::HTTP_CREATED);
+        $validated = $request->validate([
+            'book_id' => 'required|integer',
+            'amount' => 'required|integer',
+        ]);
+        if ($validated) {
+            Cart::create($request->all());
+            return response()->json(['success' => 'Thêm sản phẩm vào giỏ hàng thành công'], Response::HTTP_CREATED);
+        } else {
+            return response()->json(['error' => ''], Response::HTTP_BAD_REQUEST);
+        }
     }
 
     /**
@@ -48,9 +54,11 @@ class CartController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(StorePostRequest $request, Cart $cart)
+    public function update(Request $request, Cart $cart)
     {
-        $validated  = $request->validated();
+        $validated  = $request->validate([
+            'amount' => 'required|integer',
+        ]);
         try {
             if ($validated) {
                 $result = Cart::findOrFail('id', $cart->id);
@@ -60,10 +68,9 @@ class CartController extends Controller
                 } else {
                     return response()->json(['message' => 'Không thể cập nhật số lượng sản phẩm của bạn'], Response::HTTP_NOT_ACCEPTABLE);
                 }
-            }else {
-                return response()->json(['message'=> 'Có lỗi trong quá trình cập nhật'], Response::HTTP_BAD_REQUEST);
+            } else {
+                return response()->json(['message' => 'Có lỗi trong quá trình cập nhật'], Response::HTTP_BAD_REQUEST);
             }
-            
         } catch (Exception $e) {
             return response()->json(['error' => $e->getMessage()], Response::HTTP_BAD_REQUEST);
         }
