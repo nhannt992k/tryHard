@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
+
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -19,10 +19,6 @@ class User extends Authenticatable implements MustVerifyEmail
      * @var array<int, string>
      */
     protected $fillable = [
-        // Form sẽ kiểm tra filed nhập vào có dạng nào
-        // Nếu có dạng +84 là số diện thoại
-        // có dạng @gmail.com là email
-        // còn lại là username
         'name', 'email', 'phone_number','username', 'password','role_id',
     ];
 

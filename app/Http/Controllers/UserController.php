@@ -2,14 +2,20 @@
 
 namespace App\Http\Controllers;
 
+use App\Customs\Services\EmailVerificationService;
+use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\Request;
 use App\Models\User;
+use App\Notifications\EmailVerifiedNotification;
 use Symfony\Component\HttpFoundation\Response;
 use Exception;
 use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
+    public function __construct(private EmailVerificationService $emailVerificationService){
+
+    }
     /**
      * Display a listing of the resource.
      */
@@ -32,6 +38,8 @@ class UserController extends Controller
                 $request['password'] = Hash::make($request['password']);
                 $request['role_id'] = $request['role_id'] ?? 0;
                 $user = User::create($request->all());
+                $this->emailVerificationService->sendVerificationLink($user);
+                // $this->guard()->login($user);
                 return response()->json(['message' => 'Account created successfully'], Response::HTTP_OK);
             } else {
                 return response()->json(['error' => 'Cant create this use'], Response::HTTP_BAD_REQUEST);
@@ -64,17 +72,17 @@ class UserController extends Controller
             'avatar' => 'sometimes|nullable|image|mimes:jpg,png,jpeg,gif,svg|max:2048',
         ]);
         try {
-           if ($validated) {
-            $fields = $request->only('name', 'avatar');
-            $fileName  = $request->file('avatar')->getClientOriginalName();
-            $pathImage = $request->file('avatar')->storeAs('uploads', $fileName, 'public');
-            $fields['avatar'] = $pathImage;
-            $fields = array_filter($fields, fn ($value) => !is_null($value));
-            $data = User::where('id', $user->id)->update($fields);
-            return response()->json(['message' => 'Update successful'], Response::HTTP_ACCEPTED);
-           }else {
-            return response()->json(['error' => 'Cannot update'], Response::HTTP_BAD_REQUEST);
-           }
+            if ($validated) {
+                $fields = $request->only('name', 'avatar');
+                $fileName  = $request->file('avatar')->getClientOriginalName();
+                $pathImage = $request->file('avatar')->storeAs('uploads', $fileName, 'public');
+                $fields['avatar'] = $pathImage;
+                $fields = array_filter($fields, fn ($value) => !is_null($value));
+                $data = User::where('id', $user->id)->update($fields);
+                return response()->json(['message' => 'Update successful'], Response::HTTP_ACCEPTED);
+            } else {
+                return response()->json(['error' => 'Cannot update'], Response::HTTP_BAD_REQUEST);
+            }
         } catch (Exception $e) {
             return response()->json(['error' => $e->getMessage()], Response::HTTP_BAD_REQUEST);
         }
