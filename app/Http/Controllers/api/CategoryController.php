@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Category;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 use Symfony\Component\HttpFoundation\Response;
 
 class CategoryController extends Controller
@@ -15,10 +16,10 @@ class CategoryController extends Controller
     public function index()
     {
         try {
-            $categories = Category::select('id', 'name')->get();
+            $categories = Category::select("id", "name")->get();
             return response()->json($categories);
         } catch (Exception $e) {
-            return response()->json(['error' => $e->getMessage()], Response::HTTP_BAD_REQUEST);
+            return response()->json(["error" => $e->getMessage()], Response::HTTP_BAD_REQUEST);
         }
     }
 
@@ -36,15 +37,19 @@ class CategoryController extends Controller
     public function show(Category $category)
     {
         try {
-            $data = Category::join('books', 'category_id', '=', 'categories.id')
-                ->join('images', 'images.book_id', '=', 'books.id')
-                ->select('books.id', 'books.price', 'books.quantity', 'images.image')
-                ->where('images.is_default', 1)
-                ->where('categories.id', $category->id)
+            $data = Category::join("books", "category_id", "=", "categories.id")
+                ->join("images", "images.book_id", "=", "books.id")
+                ->select("books.id", "books.price", "books.quantity", "images.image")
+                ->where("images.is_default", 1)
+                ->where("categories.id", $category->id)
                 ->get();
             return response()->json($data);
         } catch (Exception $e) {
-            return response()->json(['error' => $e->getMessage()], Response::HTTP_BAD_REQUEST);
+            return response()->json([
+                "status" => false,
+                "message" => "We can't take books of this category for you right now!! Comeback soon!!!",
+                "error" => $e->getMessage()
+            ], Response::HTTP_BAD_REQUEST);
         }
     }
 
@@ -53,20 +58,30 @@ class CategoryController extends Controller
      */
     public function update(Request $request, Category $category)
     {
-        $validated = $request->validate([
-            'name' => 'required',
-        ]);
         try {
-            if ($validated) {
-                $data = Category::where('id', $category->id)
-                ->update($request->only('name'));
-                return response()->json(['message' => 'Update success'],Response::HTTP_OK);
-            }else {
-                return response()->json(['error' => 'Update fail'],Response::HTTP_OK);
 
+            $validated = Validator::make($request->all(), [
+                "name" => "required",
+            ]);
+            if ($validated->fails()) {
+                return response()->json([
+                    "status" => false,
+                    "message" => "Make sure you write name of category",
+                    "error" => $validated->errors()
+                ], Response::HTTP_UNAUTHORIZED);
             }
-        } catch (Exception $e) {    
-            return response()->json(['error'=> $e->getMessage()], Response::HTTP_BAD_REQUEST);
+            $data = Category::where("id", $category->id)
+                ->update($request->only("name"));
+            return response()->json([
+                "status" => false,
+                "message" => "Update name category success"
+            ], Response::HTTP_OK);
+        } catch (Exception $e) {
+            return response()->json([
+                "status" => false,
+                "message" => "Update fail please try again",
+                "error" => $e->getMessage()
+            ], Response::HTTP_BAD_REQUEST);
         }
     }
 

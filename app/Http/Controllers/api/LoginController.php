@@ -43,8 +43,8 @@ class LoginController extends Controller
 
         } catch (Exception $e) {
             return response()->json([
-                'status' => 'fail',
-                'message' => 'Create fail',
+                "status" => "fail",
+                "message" => "Create fail",
             ], Response::HTTP_BAD_REQUEST);
         }
     }

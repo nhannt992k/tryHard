@@ -17,33 +17,33 @@ class RegisterController extends Controller
     {
         try {
             $validated = Validator::make($request->all(), [
-                'name' => "required|string|max:30",
-                'email' => "required|email|unique:users,email",
-                'password' => "required|string",
+                "name" => "required|string|max:30",
+                "email" => "required|email|unique:users,email",
+                "password" => "required|string",
             ]);
             if ($validated->fails()) {
                 return response()->json([
-                    'status' => 'false',
-                    'message' => 'validate error',
-                    'errors' => $validated->errors()
+                    "status" => "false",
+                    "message" => "validate error",
+                    "errors" => $validated->errors()
                 ], Response::HTTP_UNAUTHORIZED);
             }
             $user = User::create([
-                'name' => $request->name,
-                'email' => $request->email,
-                'password' => bcrypt($request->password),
+                "name" => $request->name,
+                "email" => $request->email,
+                "password" => bcrypt($request->password),
             ]);
             // $user->notify(new VerifyEmail());
             $user->sendEmailVerificationNotification();
             return response()->json([
-                'status' => 'success',
-                'message' => 'User created',
-                'token' => $user->createToken('api token')->plainTextToken
-            ],Response::HTTP_CREATED );
+                "status" => "success",
+                "message" => "User created",
+                "token" => $user->createToken("api token")->plainTextToken
+            ], Response::HTTP_CREATED);
         } catch (Exception $e) {
             return response()->json([
-                'status' => 'fail',
-                'message' => 'Create fail',
+                "status" => "fail",
+                "message" => "Create fail",
             ], Response::HTTP_BAD_REQUEST);
         }
     }
