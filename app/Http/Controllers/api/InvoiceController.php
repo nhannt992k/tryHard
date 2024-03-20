@@ -18,7 +18,6 @@ class InvoiceController extends Controller
      */
     public function index()
     {
-        //
     }
 
     /**
@@ -26,7 +25,6 @@ class InvoiceController extends Controller
      */
     public function store(Request $request)
     {
-        /* dd($request->all()); */
         try {
             if (!empty($request)) {
                 $cartItems = Cart::select("user_id", "book_id", "amount")
@@ -34,7 +32,6 @@ class InvoiceController extends Controller
                     ->get()
                     ->toArray();
                 $userId = $cartItems[0]['user_id'];
-                /* dd($userId); */
                 $invoice = Invoice::create(['total_amount' => $userId]);
                 $invoiceItems = [];
                 foreach ($cartItems as $item) {
@@ -62,16 +59,14 @@ class InvoiceController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    /* public function update(Request $request, string $id)
     {
-        //
-    }
+    } */
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    /* public function destroy(string $id)
     {
-        //
-    }
+    } */
 }

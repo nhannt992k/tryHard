@@ -33,12 +33,11 @@ class RegisterController extends Controller
                 "email" => $request->email,
                 "password" => bcrypt($request->password),
             ]);
-            // $user->notify(new VerifyEmail());
             $user->sendEmailVerificationNotification();
             return response()->json([
                 "status" => "success",
                 "message" => "User created",
-                "token" => $user->createToken("api token")->plainTextToken
+                "token" => $user->createToken("verify email")->plainTextToken
             ], Response::HTTP_CREATED);
         } catch (Exception $e) {
             return response()->json([

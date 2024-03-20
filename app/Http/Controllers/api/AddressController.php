@@ -60,7 +60,7 @@ class AddressController extends Controller
         } catch (Exception $e) {
             return response()->json([
                 "status" => false,
-                "message" => "Address can't create",
+                "message" => "Add address unsucessful",
                 "error" => $e->getMessage()
             ], Response::HTTP_BAD_REQUEST);
         }
@@ -75,7 +75,11 @@ class AddressController extends Controller
             $data = Address::find($address->id);
             return response()->json($data);
         } catch (Exception $e) {
-            return response()->json(["error" => $e->getMessage()], Response::HTTP_BAD_REQUEST);
+            return response()->json([
+                "status" => true,
+                "message" => "We can't take address", 
+                "error" => $e->getMessage()
+            ], Response::HTTP_BAD_REQUEST);
         }
     }
 
@@ -111,7 +115,8 @@ class AddressController extends Controller
         } catch (Exception $e) {
             return response()->json([
                 "status" => true,
-                "message" => "Update address fail", "error" => $e->getMessage()
+                "message" => "Update address fail", 
+                "error" => $e->getMessage()
             ], Response::HTTP_BAD_REQUEST);
         }
     }
@@ -124,16 +129,15 @@ class AddressController extends Controller
         try {
             $data = Address::where("id", $address->id)
                 ->where("user_id", $user->id)
-                ->delete(); // Còn thiếu bước kiểm tra đơn hàng có đang được vận chuyển hay mới mua gần đây!!!!!
-                // lên lịch xoá sau 30 ngày nếu không đăng nhập lại! 
+                ->delete();
             return response()->json([
                 "status" => true,
-                "message" => "Your account is scheduled to be deleted in 30 days"
+                "message" => "Your address remove successful"
             ], Response::HTTP_ACCEPTED);
         } catch (Exception $e) {
             return response()->json([
                 "status" => false,
-                "message" => "Can't delete your account! Sure you don't have books status delivery or don't have transaction least 7days",
+                "message" => "Your address remove unsuccessful",
                 "error" => $e->getMessage()
             ], Response::HTTP_BAD_REQUEST);
         }

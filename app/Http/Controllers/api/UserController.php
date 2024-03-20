@@ -13,9 +13,7 @@ use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
-    public function __construct(private EmailVerificationService $emailVerificationService){
 
-    }
     /**
      * Display a listing of the resource.
      */
@@ -97,12 +95,19 @@ class UserController extends Controller
             $result = User::find($user->id);
             if ($result) {
                 $result->delete();
-                return response()->json(["message" => "Account deleted successfully"], Response::HTTP_OK);
-            } else {
-                return response()->json(["error" => "Account deletion unsuccessful"], Response::HTTP_BAD_REQUEST);
+                // Còn thiếu bước kiểm tra đơn hàng có đang được vận chuyển hay mới mua gần đây!!!!!
+                // lên lịch xoá sau 30 ngày nếu không đăng nhập lại! 
+                return response()->json([
+                    "status" => true,
+                    "message" => "Your account is scheduled to be deleted in 30 days"
+                ], Response::HTTP_ACCEPTED);
             }
         } catch (Exception $e) {
-            return response()->json(["error" => "Undefined error"], Response::HTTP_BAD_REQUEST);
+            return response()->json([
+                "status" => false,
+                "message" => "Can't delete your account! Sure you don't have books status delivery or don't have transaction least 7days",
+                "error" => $e->getMessage()
+            ], Response::HTTP_BAD_REQUEST);
         }
     }
 }
