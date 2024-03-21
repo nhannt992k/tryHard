@@ -2,8 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\AddressRequest;
-use App\Http\Requests\StorePostRequest;
+
 use Illuminate\Http\Request;
 use App\Models\Address;
 use App\Models\User;

@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\BookRequest;
 use App\Models\Book;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -29,10 +28,10 @@ class BookController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(BookRequest $request)
+    public function store(Request $request)
     {
         try {
-            $request->validated();
+        
             $book = Book::create($request->all());
             return response()->json(['success'=> 'Create book successfully'],Response::HTTP_CREATED);
         } catch (Exception $e) {

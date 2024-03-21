@@ -2,10 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\StorePostRequest;
 use App\Models\Cart;
 use App\Models\User;
-use App\Models\Book;
 use Exception;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
