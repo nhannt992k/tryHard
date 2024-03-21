@@ -7,6 +7,7 @@ use App\Models\Invoice;
 use App\Models\InvoiceItem;
 use Illuminate\Http\Request;
 use Exception;
+use Illuminate\Support\Facades\Validator;
 use Symfony\Component\HttpFoundation\Response;
 
 
@@ -25,25 +26,41 @@ class InvoiceController extends Controller
     public function store(Request $request)
     {
         try {
-            if (!empty($request)) {
-                $cartItems = Cart::select("user_id", "book_id", "amount")
-                    ->whereIn("id", $request->id)
-                    ->get()
-                    ->toArray();
-                $userId = $cartItems[0]['user_id'];
-                $invoice = Invoice::create(['total_amount' => $userId]);
-                $invoiceItems = [];
-                foreach ($cartItems as $item) {
-                    $invoiceItems[] = new InvoiceItem($item);
-                }
-                $invoice->items()->saveMany($invoiceItems);
-                Cart::whereIn('id', $request->id)->delete();
-                return response()->json(['message' => 'Đã xuất hoá đơn thành công'], Response::HTTP_CREATED);
-            } else {
-                return response()->json(["message" => "Không thể tạo hoá đơn"], Response::HTTP_BAD_REQUEST);
+            $validated = Validator::make($request->all(), [
+                "user_id" => "required",
+                "book_id" => "required",
+                "amount" => "required",
+
+            ]);
+            if ($validated->fails()) {
+                return response()->json([
+                    "status" => false,
+                    "message" => "validate error",
+                    "error" => $validated->errors(),
+                ], Response::HTTP_BAD_REQUEST);
             }
+            $cartItems = Cart::select("user_id", "book_id", "amount")
+                ->whereIn("id", $request->id)
+                ->get()
+                ->toArray();
+            $userId = $cartItems[0]["user_id"];
+            $invoice = Invoice::create(["total_amount" => $userId]);
+            $invoiceItems = [];
+            foreach ($cartItems as $item) {
+                $invoiceItems[] = new InvoiceItem($item);
+            }
+            $invoice->items()->saveMany($invoiceItems);
+            Cart::whereIn("id", $request->id)->delete();
+            return response()->json([
+                "status" => true,
+                "message" => " Invoice has been exported, thanks you",
+            ], Response::HTTP_CREATED);
         } catch (Exception $e) {
-            return response()->json(["message" => $e->getMessage()], Response::HTTP_BAD_REQUEST);
+            return response()->json([
+                "status" => false,
+                "message" => "Can't export your invoice",
+                "error" => $e->getMessage()
+            ], Response::HTTP_BAD_REQUEST);
         }
     }
 
