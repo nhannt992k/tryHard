@@ -26,7 +26,7 @@ class AddressController extends Controller
                 ->get();
             return response()->json($data);
         } catch (Exception $e) {
-            return response()->json(["error" => $e->getMessage()], Response::HTTP_BAD_REQUEST);
+            return response()->json([], Response::HTTP_BAD_REQUEST);
         }
     }
 
@@ -48,7 +48,6 @@ class AddressController extends Controller
                 return response()->json([
                     "status" => false,
                     "message" => "Check address again please make sure don't have fields empty ",
-                    "errors" => $validated->errors()
                 ], Response::HTTP_UNAUTHORIZED);
             }
             $data = Address::query()->create($request->all());
@@ -60,7 +59,6 @@ class AddressController extends Controller
             return response()->json([
                 "status" => false,
                 "message" => "Add address unsucessful",
-                "error" => $e->getMessage()
             ], Response::HTTP_BAD_REQUEST);
         }
     }
@@ -77,7 +75,6 @@ class AddressController extends Controller
             return response()->json([
                 "status" => true,
                 "message" => "We can't take address", 
-                "error" => $e->getMessage()
             ], Response::HTTP_BAD_REQUEST);
         }
     }
@@ -115,7 +112,7 @@ class AddressController extends Controller
             return response()->json([
                 "status" => true,
                 "message" => "Update address fail", 
-                "error" => $e->getMessage()
+                
             ], Response::HTTP_BAD_REQUEST);
         }
     }
@@ -137,7 +134,7 @@ class AddressController extends Controller
             return response()->json([
                 "status" => false,
                 "message" => "Your address remove unsuccessful",
-                "error" => $e->getMessage()
+                
             ], Response::HTTP_BAD_REQUEST);
         }
     }

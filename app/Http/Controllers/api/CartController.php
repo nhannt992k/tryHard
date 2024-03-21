@@ -6,6 +6,7 @@ use App\Models\Cart;
 use App\Models\User;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -26,7 +27,6 @@ class CartController extends Controller
                 return response()->json([
                     "status" => false,
                     "message" => "Somethings wrong try again please",
-                    "error" => $validated->errors()
                 ], Response::HTTP_UNAUTHORIZED);
             }
             Cart::create($request->all());
@@ -38,7 +38,6 @@ class CartController extends Controller
             return response()->json([
                 "status" => false,
                 "message" => "We can't add this product to your cart",
-                "error" => $e->getMessage()
             ], Response::HTTP_BAD_REQUEST);
         }
     }
@@ -50,10 +49,10 @@ class CartController extends Controller
     {
         try {
             $data = Cart::query()
-                ->join("users", "users.id", "=", "carts.user_id")
+                ->join("users", "users.id", "carts.user_id")
                 ->join("books", "books.id", "=", "carts.book_id")
                 ->join("images", "images.book_id", "=", "books.id")
-                ->select("carts.id" . "users.id", "books.id", "books.name", "images.image", "carts.amount")
+                ->select("carts.id" , "users.id", "books.id", "books.name", "images.image", "carts.amount")
                 ->where("images.is_default", 1)
                 ->where("carts.user_id", $user->id)
                 ->get();
@@ -62,7 +61,6 @@ class CartController extends Controller
             return response()->json([
                 "status" => false,
                 "message" => "We can't take your cart, try login again",
-                "error" => $e->getMessage()
             ], Response::HTTP_BAD_REQUEST);
         }
     }
@@ -97,6 +95,8 @@ class CartController extends Controller
      */
     public function destroy(Cart $cart)
     {
+       // Global hepler
+        // Auth::user()-
         try {
             $result = Cart::find($cart->id);
             if ($result) {
@@ -115,7 +115,7 @@ class CartController extends Controller
             return response()->json([
                 "status" => false,
                 "message" => "We can't delete this cart",
-                "error" => $e->getMessage()
+               
             ], Response::HTTP_BAD_REQUEST);
         }
     }

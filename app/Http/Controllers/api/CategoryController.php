@@ -19,7 +19,7 @@ class CategoryController extends Controller
             $categories = Category::select("id", "name")->get();
             return response()->json($categories);
         } catch (Exception $e) {
-            return response()->json(["error" => $e->getMessage()], Response::HTTP_BAD_REQUEST);
+            return response()->json([], Response::HTTP_BAD_REQUEST);
         }
     }
 
@@ -48,7 +48,7 @@ class CategoryController extends Controller
             return response()->json([
                 "status" => false,
                 "message" => "We can't take books of this category for you right now!! Comeback soon!!!",
-                "error" => $e->getMessage()
+                
             ], Response::HTTP_BAD_REQUEST);
         }
     }
@@ -80,7 +80,7 @@ class CategoryController extends Controller
             return response()->json([
                 "status" => false,
                 "message" => "Update fail please try again",
-                "error" => $e->getMessage()
+                
             ], Response::HTTP_BAD_REQUEST);
         }
     }

@@ -25,7 +25,7 @@ class RegisterController extends Controller
                 return response()->json([
                     "status" => "false",
                     "message" => "validate error",
-                    "errors" => $validated->errors()
+
                 ], Response::HTTP_UNAUTHORIZED);
             }
             $user = User::create([

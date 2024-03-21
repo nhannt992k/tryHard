@@ -59,7 +59,7 @@ class InvoiceController extends Controller
             return response()->json([
                 "status" => false,
                 "message" => "Can't export your invoice",
-                "error" => $e->getMessage()
+               
             ], Response::HTTP_BAD_REQUEST);
         }
     }

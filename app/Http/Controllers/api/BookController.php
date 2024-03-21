@@ -21,7 +21,7 @@ class BookController extends Controller
                 ->where('images.is_default', 1)->get();
             return response()->json($data);
         } catch (Exception $e) {
-            return response()->json(['error' => $e->getMessage()], Response::HTTP_BAD_REQUEST);
+            return response()->json([], Response::HTTP_BAD_REQUEST);
         }
     }
 
@@ -61,7 +61,7 @@ class BookController extends Controller
                 return response()->json(['error' => 'Book not found'],Response::HTTP_NOT_FOUND);
             }
         } catch (Exception $e) {
-            return response()->json(['error' => $e->getMessage()], Response::HTTP_BAD_REQUEST);
+            return response()->json([], Response::HTTP_BAD_REQUEST);
         }
     }
 

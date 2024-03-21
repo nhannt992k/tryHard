@@ -43,7 +43,7 @@ class UserController extends Controller
                 return response()->json(["error" => "Cant create this use"], Response::HTTP_BAD_REQUEST);
             }
         } catch (Exception $e) {
-            return response()->json(["error" => $e->getMessage()], Response::HTTP_BAD_GATEWAY);
+            return response()->json([], Response::HTTP_BAD_GATEWAY);
         }
     }
  */
@@ -56,7 +56,7 @@ class UserController extends Controller
             $data = User::select("username", "phone_number", "email", "email_verified_at", "avatar")->find($user->id);
             return response()->json($data, Response::HTTP_OK);
         } catch (Exception $e) {
-            return response()->json(["error" => $e->getMessage()], Response::HTTP_BAD_REQUEST);
+            return response()->json([], Response::HTTP_BAD_REQUEST);
         }
     }
 
@@ -82,7 +82,7 @@ class UserController extends Controller
                 return response()->json(["error" => "Cannot update"], Response::HTTP_BAD_REQUEST);
             }
         } catch (Exception $e) {
-            return response()->json(["error" => $e->getMessage()], Response::HTTP_BAD_REQUEST);
+            return response()->json([], Response::HTTP_BAD_REQUEST);
         }
     }
 
@@ -106,7 +106,7 @@ class UserController extends Controller
             return response()->json([
                 "status" => false,
                 "message" => "Can't delete your account! Sure you don't have books status delivery or don't have transaction least 7days",
-                "error" => $e->getMessage()
+                
             ], Response::HTTP_BAD_REQUEST);
         }
     }
