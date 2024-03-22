@@ -6,10 +6,8 @@ use App\Models\Cart;
 use App\Models\User;
 use Exception;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Symfony\Component\HttpFoundation\Response;
-
 
 class CartController extends Controller
 {
@@ -115,7 +113,6 @@ class CartController extends Controller
             return response()->json([
                 "status" => false,
                 "message" => "We can't delete this cart",
-               
             ], Response::HTTP_BAD_REQUEST);
         }
     }

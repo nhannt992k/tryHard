@@ -25,7 +25,6 @@ class LoginController extends Controller
                 return response()->json([
                     "status" => "error",
                     "message" => "validate error",
-                    "error" => $validated->errors()
                 ], Response::HTTP_UNAUTHORIZED);
             }
             if (!Auth::attempt(request()->only(["email","password"]))) {

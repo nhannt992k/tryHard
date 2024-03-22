@@ -10,7 +10,6 @@ use Exception;
 use Illuminate\Support\Facades\Validator;
 use Symfony\Component\HttpFoundation\Response;
 
-
 class InvoiceController extends Controller
 {
     /**
@@ -36,7 +35,6 @@ class InvoiceController extends Controller
                 return response()->json([
                     "status" => false,
                     "message" => "validate error",
-                    "error" => $validated->errors(),
                 ], Response::HTTP_BAD_REQUEST);
             }
             $cartItems = Cart::select("user_id", "book_id", "amount")
@@ -59,7 +57,6 @@ class InvoiceController extends Controller
             return response()->json([
                 "status" => false,
                 "message" => "Can't export your invoice",
-               
             ], Response::HTTP_BAD_REQUEST);
         }
     }

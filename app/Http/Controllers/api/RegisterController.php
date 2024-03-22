@@ -2,13 +2,11 @@
 
 namespace App\Http\Controllers\api;
 
-use App\Events\NewUserRegistered;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Models\User;
-use App\Notifications\VerifyEmail;
 use Exception;
 
 class RegisterController extends Controller
@@ -25,7 +23,6 @@ class RegisterController extends Controller
                 return response()->json([
                     "status" => "false",
                     "message" => "validate error",
-
                 ], Response::HTTP_UNAUTHORIZED);
             }
             $user = User::create([

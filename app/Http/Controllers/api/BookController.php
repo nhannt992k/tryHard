@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Models\Image;
 use Exception;
+
 class BookController extends Controller
 {
     /**
@@ -16,7 +17,7 @@ class BookController extends Controller
     {
         try {
             $data = Book::query()
-                ->join('images', 'images.book_id', '=', 'books.id')
+                ->join('images', 'images.book_id', 'books.id')
                 ->select('books.id', 'books.price', 'books.quantity', 'images.image')
                 ->where('images.is_default', 1)->get();
             return response()->json($data);
@@ -46,22 +47,21 @@ class BookController extends Controller
     {
         try {
             $data = Book::query()
-                ->join('authors', 'authors.id', '=', 'books.author_id')
-                ->join('publishers', 'publishers.id', '=', 'books.publisher_id')
+                ->join('authors', 'authors.id', 'books.author_id')
+                ->join('publishers', 'publishers.id', 'books.publisher_id')
                 ->select('books.id', 'books.name', 'books.quantity', 'books.price', 'authors.name', 'publishers.name')
                 ->where('books.id', $book->id)
                 ->first();
 
-            if ($data) {
-                $images = Image::where('book_id', $data->id)->pluck('image')->toArray();
-                $data = $data->toArray();
-                $data['images'] = $images;
-                return response()->json($data);
-            } else {
-                return response()->json(['error' => 'Book not found'],Response::HTTP_NOT_FOUND);
+            if (empty($data)) {
             }
+            $images = Image::where('book_id', $data->id)->pluck('image')->toArray();
+            $data = $data->toArray();
+            $data['images'] = $images;
+            return response()->json($data);
+          
         } catch (Exception $e) {
-            return response()->json([], Response::HTTP_BAD_REQUEST);
+            return response()->json(['message' => 'Book not found'],Response::HTTP_NOT_FOUND);
         }
     }
 

@@ -2,14 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Customs\Services\EmailVerificationService;
-use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\Request;
 use App\Models\User;
-use App\Notifications\EmailVerifiedNotification;
 use Symfony\Component\HttpFoundation\Response;
 use Exception;
-use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
@@ -106,7 +102,7 @@ class UserController extends Controller
             return response()->json([
                 "status" => false,
                 "message" => "Can't delete your account! Sure you don't have books status delivery or don't have transaction least 7days",
-                
+
             ], Response::HTTP_BAD_REQUEST);
         }
     }

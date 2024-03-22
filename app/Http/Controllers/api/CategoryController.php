@@ -37,8 +37,8 @@ class CategoryController extends Controller
     public function show(Category $category)
     {
         try {
-            $data = Category::join("books", "category_id", "=", "categories.id")
-                ->join("images", "images.book_id", "=", "books.id")
+            $data = Category::join("books", "category_id", "categories.id")
+                ->join("images", "images.book_id", "books.id")
                 ->select("books.id", "books.price", "books.quantity", "images.image")
                 ->where("images.is_default", 1)
                 ->where("categories.id", $category->id)
@@ -48,7 +48,6 @@ class CategoryController extends Controller
             return response()->json([
                 "status" => false,
                 "message" => "We can't take books of this category for you right now!! Comeback soon!!!",
-                
             ], Response::HTTP_BAD_REQUEST);
         }
     }
@@ -67,7 +66,7 @@ class CategoryController extends Controller
                 return response()->json([
                     "status" => false,
                     "message" => "Make sure you write name of category",
-                    "error" => $validated->errors()
+                   
                 ], Response::HTTP_UNAUTHORIZED);
             }
             $data = Category::where("id", $category->id)
@@ -80,7 +79,6 @@ class CategoryController extends Controller
             return response()->json([
                 "status" => false,
                 "message" => "Update fail please try again",
-                
             ], Response::HTTP_BAD_REQUEST);
         }
     }
