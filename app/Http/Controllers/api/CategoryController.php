@@ -58,7 +58,6 @@ class CategoryController extends Controller
     public function update(Request $request, Category $category)
     {
         try {
-
             $validated = Validator::make($request->all(), [
                 "name" => "required",
             ]);
@@ -66,7 +65,7 @@ class CategoryController extends Controller
                 return response()->json([
                     "status" => false,
                     "message" => "Make sure you write name of category",
-                   
+
                 ], Response::HTTP_UNAUTHORIZED);
             }
             $data = Category::where("id", $category->id)

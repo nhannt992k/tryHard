@@ -54,7 +54,7 @@ class CartController extends Controller
                 ->where("images.is_default", 1)
                 ->where("carts.user_id", $user->id)
                 ->get();
-            return response()->json($data);
+            return response()->json($data, Response::HTTP_OK);
         } catch (Exception $e) {
             return response()->json([
                 "status" => false,

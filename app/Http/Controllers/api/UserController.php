@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use Symfony\Component\HttpFoundation\Response;
 use Exception;
+use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
 {
@@ -52,7 +53,7 @@ class UserController extends Controller
             $data = User::select("username", "phone_number", "email", "email_verified_at", "avatar")->find($user->id);
             return response()->json($data, Response::HTTP_OK);
         } catch (Exception $e) {
-            return response()->json([], Response::HTTP_BAD_REQUEST);
+            return response()->json(["message" => "Can't take information this user"], Response::HTTP_BAD_REQUEST);
         }
     }
 
@@ -61,22 +62,21 @@ class UserController extends Controller
      */
     public function update(Request $request, User $user)
     {
-        $validated = $request->validate([
-            "username" => "required|nullable|string|max:255",
+        $validated = Validator::make($request->all(), [
+            "username" => "sometimes|nullable|string|max:255",
             "avatar" => "sometimes|nullable|image|mimes:jpg,png,jpeg,gif,svg|max:2048",
         ]);
         try {
-            if ($validated) {
-                $fields = $request->only("name", "avatar");
-                $fileName  = $request->file("avatar")->getClientOriginalName();
-                $pathImage = $request->file("avatar")->storeAs("uploads", $fileName, "public");
-                $fields["avatar"] = $pathImage;
-                $fields = array_filter($fields, fn ($value) => !is_null($value));
-                $data = User::where("id", $user->id)->update($fields);
-                return response()->json(["message" => "Update successful"], Response::HTTP_ACCEPTED);
-            } else {
+            if ($validated->fails()) {
                 return response()->json(["error" => "Cannot update"], Response::HTTP_BAD_REQUEST);
             }
+            $fields = $validated->only("name", "avatar");
+            $fileName  = $validated->file("avatar")->getClientOriginalName();
+            $pathImage = $validated->file("avatar")->storeAs("uploads", $fileName, "public");
+            $fields["avatar"] = $pathImage;
+            $fields = array_filter($fields, fn ($value) => !is_null($value));
+            $data = User::where("id", $user->id)->update($fields);
+            return response()->json(["message" => "Update successful"], Response::HTTP_ACCEPTED);
         } catch (Exception $e) {
             return response()->json([], Response::HTTP_BAD_REQUEST);
         }

@@ -2,14 +2,12 @@
 
 namespace App\Http\Controllers;
 
-
 use Illuminate\Http\Request;
 use App\Models\Address;
 use App\Models\User;
 use Symfony\Component\HttpFoundation\Response;
 use Exception;
 use Illuminate\Support\Facades\Validator;
-
 use function PHPUnit\Framework\isNull;
 
 class AddressController extends Controller
@@ -50,7 +48,7 @@ class AddressController extends Controller
                     "message" => "Check address again please make sure don't have fields empty ",
                 ], Response::HTTP_UNAUTHORIZED);
             }
-            $data = Address::query()->create($request->all());
+            $data = Address::query()->create($validated->all());
             return response()->json([
                 "status" => true,
                 "message" => "Add address sucess"
@@ -101,7 +99,7 @@ class AddressController extends Controller
                     "error" => $validated->errors()
                 ], Response::HTTP_UNAUTHORIZED);
             }
-            $fields = $request->only("province", "district", "ward", "commue", "address", "is_default");
+            $fields = $validated->only("province", "district", "ward", "commue", "address", "is_default");
             $fields = array_filter($fields, fn ($value) => !isNull($value));
             $data = Address::where("id", $address->id)->update($fields);
             return response()->json([
@@ -134,7 +132,6 @@ class AddressController extends Controller
             return response()->json([
                 "status" => false,
                 "message" => "Your address remove unsuccessful",
-                
             ], Response::HTTP_BAD_REQUEST);
         }
     }

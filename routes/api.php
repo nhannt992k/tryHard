@@ -6,8 +6,6 @@ use App\Http\Controllers\CartController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\UserController;
-use App\Http\Controllers\UserRoleController;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 /*
