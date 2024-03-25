@@ -64,9 +64,21 @@ class InvoiceController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(Invoice $invoice)
     {
-        //
+        try {
+            $data = Invoice::join("invoice_items","invoice_id","=","invoice.id")
+            ->join("users","users.id","=","user_id")
+            ->join("books","books.id","=","book_id")
+            ->select("invoice.id","books.name","invoice.create_at","invoice_items.amount")
+            ->where("invoice.id", $invoice->id)
+            ->ddRawSql()
+            ->get();
+
+
+        } catch (\Throwable $th) {
+            //throw $th;
+        }
     }
 
     /**

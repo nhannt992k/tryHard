@@ -35,8 +35,10 @@ Route::get("/carts/{user}", [CartController::class, "index"]);
 Route::post("/cart", [CartController::class, "store"]);
 Route::delete("/cart/{cart}", [CartController::class, "destroy"]);
 
-Route::get("/categories", [CategoryController::class,"index"]);
-Route::get("/category/{category}", [CategoryController::class,"show"]);
+Route::get("/categories", [CategoryController::class, "index"]);
+Route::get("/category/{category}", [CategoryController::class, "show"]);
 
 Route::post("/address", [AddressController::class, "store"]);
 Route::post("/invoice", [InvoiceController::class, "store"]);
+
+Route::get("/show/{invoice}", [InvoiceController::class, "show"]);
